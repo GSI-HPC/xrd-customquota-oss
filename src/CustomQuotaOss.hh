@@ -29,12 +29,12 @@
 #include <XrdVersion.hh>
 #include <chrono>
 #include <stdio.h>
-class LustreOss : public XrdOss {
+class CustomQuotaOss : public XrdOss {
   public:
     // We just use the base implementation via nativeOss for all functions defined in this header
     // see XrdOss/XrdOss.hh for more descriptive signatures regarding XrdOss
-    LustreOss(XrdOss* native_oss, XrdSysLogger*, const char*);
-    virtual ~LustreOss();
+    CustomQuotaOss(XrdOss* native_oss, XrdSysLogger*, const char*);
+    virtual ~CustomQuotaOss();
     XrdOssDF* newDir(const char* tident) { return nativeOss->newDir(tident); }
     XrdOssDF* newFile(const char* tident) { return nativeOss->newFile(tident); }
     int Chmod(const char* a, mode_t b, XrdOucEnv* c = 0) { return nativeOss->Chmod(a, b, c); }
@@ -79,12 +79,7 @@ class LustreOss : public XrdOss {
     int StatLS(XrdOucEnv& env, const char* path, char* buff, int& blen);
 
   private:
-    std::string lustremount;
-    // cache members
-    std::chrono::seconds cacheTime{ 0 };
-    std::chrono::system_clock::time_point lastChecked{};
-    qsStruct cacheValue;
-    // Xrd members
+    std::string quota_read_filename;
     XrdOss* nativeOss;
     XrdSysLogger* log;
 };
