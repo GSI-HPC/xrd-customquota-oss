@@ -1,14 +1,14 @@
 %define        __spec_install_post %{nil}
 %define          debug_package %{nil}
 
-Name:           XrdLustreOss
+Name:           XrdCustomQuotaOss
 Version:        0.9
 Release:        1%{?dist}
 Summary:        A Lustre fs wrapper for xrd quota queries on lustre
 Group:          XRootD/Plugins
 
 License:        LGPLv3
-URL:            https://github.com/jknedlik/XrdLustreOssWrapper
+URL:            https://github.com/jknedlik/XrdCustomQuotaOssWrapper
 Source0:        %{name}-%{version}.tar.gz
 
 Requires(pre): xrootd-server
