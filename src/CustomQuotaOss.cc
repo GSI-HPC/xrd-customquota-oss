@@ -7,7 +7,6 @@
 #include <chrono>
 #include <fcntl.h>
 #include <stdexcept>
-#include <sys/quota.h>
 
 extern "C" {
 XrdOss* XrdOssGetStorageSystem(XrdOss* native_oss, XrdSysLogger* Logger, const char* config_fn,
@@ -21,27 +20,23 @@ struct qsStruct getQuotaSpace(char* target);
 };
 CustomQuotaOss::CustomQuotaOss(XrdOss* native_oss, XrdSysLogger* logger, const char* config_fn)
   : nativeOss(native_oss), log(logger) {
-    lustremount = "";
     nativeOss->Init(log, config_fn);
     loadConfig(config_fn);
 }
 
-CustomQuotaOss::~CustomQuotaOss() {}
 void CustomQuotaOss::loadConfig(const char* filename) {
 
     XrdOucStream Config;
     int cfgFD;
-    char *var, *configPath = 0;
-
     if ((cfgFD = open(filename, O_RDONLY, 0)) < 0) {
         return;
     }
-
+    const char* var;
     Config.Attach(cfgFD);
     while ((var = Config.GetMyFirstWord())) {
-        if (strcmp(var, "customQuota.filename") == 0) {
+        if (strcmp(var, "customquota.sourcefile") == 0) {
             var += 21;
-            lustremount = std::string(Config.GetWord());
+            sourceFilePath = std::string(Config.GetWord());
         }
     }
     Config.Close();
@@ -70,4 +65,5 @@ int CustomQuotaOss::StatLS(XrdOucEnv& env, const char* path, char* buff, int& bl
     blen = snprintf(buff, blen, Resp, "public", sP.Total, sP.Free, sP.LFree, sP.Usage, sP.Quota);
     return XrdOssOK;
 }
+CustomQuotaOss::~CustomQuotaOss() {}
 XrdVERSIONINFO(XrdOssGetStorageSystem, CustomQuotaOss);

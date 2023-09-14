@@ -1,4 +1,4 @@
-# LustreOssWrapper
+# CustomQuotaOss
 
 A XRootD OSS plug-in to overwrite XRootD's base implementation for space usage statistics with calls to the lustre quota API on a singular lustre mount.
 
@@ -22,8 +22,8 @@ This will create the shared library "LibXrdLustreOss.so"
 Use the Containerfile with podman to compile the library and package it into a rpm using:
 
 ```
-podman build -t xrdlustreoss .
-podman run -v rpm:/rpm -it xrdlustreoss
+podman build -t customquota .
+podman run -v rpm:/rpm -it customquota
 ```
 
 The el8 rpm will then be stored in the rpm directory.
@@ -32,9 +32,8 @@ The el8 rpm will then be stored in the rpm directory.
 
 This plug-in is loaded by the XRootD server. In order to accomplish this, you need to indicate the server where the plugin lies in the server's configuration file. Configure your lustre mountpoint and the number of seconds until the cache is invalidated.
 ```shell
-ofs.osslib  /installdir/XrdLustreOssWrapper/src/LibXrdLustreOss.so
-LustreOss.lustremount /path/to/lustre/mount
-LustreOss.cachetime 3600
+ofs.osslib  /path/to/LibXrdCustomQuotaOss.so
+CustomQuota.sourcefile /path/to/sourcefile
 
 ```
 You also need to define the mount point of your Lustre FS with LustreOss.lustremount

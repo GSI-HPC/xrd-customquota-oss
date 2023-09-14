@@ -21,7 +21,6 @@
 #ifndef __lustre_OSS_HH__
 #define __lustre_OSS_HH__
 
-#include "qsStruct.h"
 #include <XrdOss/XrdOss.hh>
 #include <XrdOuc/XrdOucStream.hh>
 #include <XrdOuc/XrdOucString.hh>
@@ -79,7 +78,7 @@ class CustomQuotaOss : public XrdOss {
     int StatLS(XrdOucEnv& env, const char* path, char* buff, int& blen);
 
   private:
-    std::string quota_read_filename;
+    std::string sourceFilePath;
     XrdOss* nativeOss;
     XrdSysLogger* log;
 };
