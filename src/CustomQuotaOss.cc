@@ -6,6 +6,9 @@
 #include <XrdVersion.hh>
 #include <chrono>
 #include <fcntl.h>
+#include <fstream>
+#include <regex>
+#include <sstream>
 #include <stdexcept>
 
 extern "C" {
@@ -26,23 +29,35 @@ CustomQuotaOss::CustomQuotaOss(XrdOss* native_oss, XrdSysLogger* logger, const c
 
 void CustomQuotaOss::loadConfig(const char* filename) {
 
-    XrdOucStream Config;
-    int cfgFD;
-    if ((cfgFD = open(filename, O_RDONLY, 0)) < 0) {
-        return;
-    }
-    const char* var;
-    Config.Attach(cfgFD);
-    while ((var = Config.GetMyFirstWord())) {
-        if (strcmp(var, "customquota.sourcefile") == 0) {
-            var += 21;
-            sourceFilePath = std::string(Config.GetWord());
-        }
-    }
-    Config.Close();
+    auto file2string = [](std::string filename) {
+        std::ifstream file{ filename };
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        return buffer.str();
+    };
+    auto lastMatch = [](std::string str, std::string rgx) {
+        std::smatch matches;
+        std::regex_search(str, matches, std::regex(rgx));
+        return matches[matches.size() - 1];
+    };
+
+    std::string content = file2string(filename);
+    sourceFilePath = lastMatch(content, "(?:customquota\\.sourcefile *)(\\S*).*\n");
 }
 
-int CustomQuotaOss::StatVS(XrdOssVSInfo* sP, const char* sname, int updt) { return XrdOssOK; }
+int CustomQuotaOss::StatVS(XrdOssVSInfo* sP, const char* sname, int updt) {
+    auto ifile = std::ifstream(sourceFilePath);
+    auto getv = [line = std::string(), &ifile]() mutable {
+        std::getline(ifile, line, ' ');
+        return std::atoll(line.c_str());
+    };
+    sP->Total = getv();
+    sP->Usage = getv();
+    sP->Free = getv();
+    sP->LFree = getv();
+
+    return XrdOssOK;
+};
 
 int CustomQuotaOss::StatFS(const char* path, char* buff, int& blen, XrdOucEnv* eP) {
     XrdOssVSInfo sP;
