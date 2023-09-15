@@ -4,7 +4,7 @@
 Name:           XrdCustomQuotaOss
 Version:        0.9
 Release:        1%{?dist}
-Summary:        A Lustre fs wrapper for xrd quota queries on lustre
+Summary:        An XRootD plugin that reads custom quota information from a file, caches its contents, and reports it to requesting clients.
 Group:          XRootD/Plugins
 
 License:        LGPLv3
@@ -16,7 +16,7 @@ Requires(pre): xrootd-server
 
 
 %description
-A Lustre fs wrapper for quota queries
+An XRootD plugin that reads custom quota information from a file, caches its contents, and reports it to requesting clients.
 
 %prep
 %setup -q
