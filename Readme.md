@@ -23,7 +23,7 @@ Use the Containerfile with podman to compile the library and package it into a r
 
 ```
 podman build -t customquota .
-podman run -v rpm:/rpm -it customquota
+podman run -v ./rpm:/rpm -it customquota
 ```
 
 The el8 rpm will then be stored in the rpm directory.
