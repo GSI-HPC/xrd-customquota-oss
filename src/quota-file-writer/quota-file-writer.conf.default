@@ -1,0 +1,21 @@
+# Command to acquire the quota reading.
+read_quota_command: 'lfs quota -g asteg /lustre -q'
+
+# Maximum time (seconds) we wait for read_quota_command to return
+read_quota_command_timeout_seconds: 3600
+
+# Regex to find and capture the values in the output
+# of read_quota_command.
+# We need to capture the first 2 numbers (in kbytes): used allowed
+find_quota_regex: '\/lustre\s(\d+)\s+(\d+)'
+
+# Wait this long between quota readings. Specify an integer, no quotes
+delay_between_readings_seconds: 3600
+
+# Filename which the quota reading will be written to
+# It will be in the following format (in bytes):
+# allowed used free free
+quota_filename: "/run/xrootd/quota"
+
+# Maximum age of the quota file in seconds
+max_file_age: 10800

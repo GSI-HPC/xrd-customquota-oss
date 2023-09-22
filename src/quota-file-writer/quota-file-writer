@@ -1,0 +1,179 @@
+#!/usr/bin/python3
+
+import yaml #config file
+import sys #exit
+import logging
+import logging.handlers
+import time #sleep
+import argparse #command line arguments
+import subprocess #call external executables
+import re #regex
+import datetime #timestamp
+import os #stat
+try:
+    from atomicwrites import atomic_write
+    atomic_writes_avail = True
+except:
+    atomic_writes_avail = False
+
+### parse command line arguments
+ap = argparse.ArgumentParser()
+ap.add_argument("-c", "--config", help="specify config file name", default="/etc/quota-file-writer.conf")
+ap.add_argument("-l", "--log", help="specify log file name (unspecified=stdout)", default="-")
+ap.add_argument("-v", "--verbose", help="verbosity: default: ERROR, -v: INFO (also, duplicate successive lines suppressed), -vv: DEBUG", action='count', default=0)
+args = ap.parse_args()
+
+### configure logging ###
+# https://stackoverflow.com/questions/44691558/suppress-multiple-messages-with-same-content-in-python-logging-module-aka-log-co
+class DuplicateFilter(logging.Filter):
+    def filter(self, record):
+        # add other fields if you need more granular comparison, depends on your app
+        current_log = (record.module, record.levelno, record.msg)
+        if current_log != getattr(self, "last_log", None):
+            self.last_log = current_log
+            return True
+        return False
+
+if args.verbose == 0:
+    log_level = logging.ERROR
+elif args.verbose == 1:
+    logger = logging.getLogger()
+    logger.addFilter(DuplicateFilter())
+    log_level = logging.INFO
+else:
+    log_level = logging.DEBUG
+
+log_format = '%(asctime)s %(levelname)s %(message)s'
+if args.log == "-":
+    logging.basicConfig(stream=sys.stdout, level=log_level, format=log_format)
+else:
+    log_handler = logging.handlers.WatchedFileHandler(args.log)
+    log_formatter = logging.Formatter(log_format)
+    log_handler.setFormatter(log_formatter)
+    log_logger = logging.getLogger()
+    log_logger.addHandler(log_handler)
+    log_logger.setLevel(log_level)
+
+if args.verbose > 2:
+    logging.info("The highest selectable verbosity level is 2 (-vv)")
+
+if not atomic_writes_avail:
+    logging.warning("Atomic writes unavailable. The quota file will have a small chance of being truncated while being read.")
+
+### read config file ###
+try:
+    with open(args.config, "r") as f:
+        config = yaml.load(f, Loader=yaml.SafeLoader)
+except Exception as e:
+    logging.error("Could not read and parse config file '%s'. The error is: '%s'" % (args.config, str(e)))
+    sys.exit(1)
+
+### validate config file ###
+required_parameters = ["read_quota_command",
+                        "read_quota_command_timeout_seconds",
+                        "find_quota_regex",
+                        "delay_between_readings_seconds",
+                        "quota_filename",
+                        "max_file_age"]
+for x in required_parameters:
+    if not x in config:
+        logging.error("Missing required option '%s' in config file." % x)
+        sys.exit(2)
+
+integer_parameters = ["read_quota_command_timeout_seconds",
+                        "delay_between_readings_seconds",
+                        "max_file_age"]
+for x in integer_parameters:
+    if not isinstance(config[x], int):
+        logging.error("The parameter '%s' needs to be an integer." % x)
+        sys.exit(4)
+    config[x] = int(config[x])
+
+## informative log output upon startup
+logging.info("Starting with the following settings:")
+for x in required_parameters:
+    logging.info("%s = %s" % (x, config[x]))
+
+### prepare regex
+r = re.compile(config["find_quota_regex"])
+
+### state machine
+logging.info("Starting state machine.")
+
+state = "run_command"
+next_state = None
+terminate = False
+raw_reading = None
+num_alwd = 0
+num_used = 0
+num_free = 0
+
+while not terminate:
+    if state == "run_command":
+        raw_reading = None #make sure we're overwriting any old value here
+        stdout = ''
+        cmd = config["read_quota_command"]
+        logging.debug(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {state}: Running Command '{cmd}'")
+        try:
+            p = subprocess.run(cmd.split(), universal_newlines=True, stdout=subprocess.PIPE, timeout=config["read_quota_command_timeout_seconds"])
+            raw_reading = str(p.stdout)
+            next_state = "parse_output"
+        except subprocess.TimeoutExpired:
+            next_state = "command_timed_out"
+        except Exception as e:
+            raw_reading = str(e)
+            next_state = "command_failed"
+    elif state == "command_timed_out":
+        logging.error(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {state}: Command timed out after {config['read_quota_command_timeout_seconds']} seconds.")
+        next_state = "stat_file"
+    elif state == "command_failed":
+        logging.error(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {state}: Command failed with: {raw_reading}")
+        next_state = "stat_file"
+    elif state == "parse_output":
+        logging.debug(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {state}: Raw reading we received: {raw_reading}")
+        found = r.search(raw_reading)
+        if found:
+            num_used = int(found.group(1)) * 1024
+            num_alwd = int(found.group(2)) * 1024
+            num_free = num_alwd - num_used
+            logging.debug(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {state}: After processing: num_used={num_used} num_alwd={num_alwd} num_free={num_free}")
+            next_state = "write_file"
+        else:
+            logging.error(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {state}: Regex did not match.")
+            next_state = "stat_file"
+    elif state == "write_file":
+        try:
+            if atomic_writes_avail:
+                with atomic_write(config["quota_filename"], overwrite=True) as f:
+                    f.write(f"{num_alwd} {num_used} {num_free} {num_free}")
+            else:
+                with open(config["quota_filename"], "w") as f:
+                    f.write(f"{num_alwd} {num_used} {num_free} {num_free}")
+            logging.debug(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {state}: Successfully wrote to file {config['quota_filename']}")
+        except Exception as e:
+            logging.error(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {state}: Failed to write file {config['quota_filename']}. The error was: {str(e)}")
+        next_state = "wait"
+    elif state == "wait":
+        logging.debug(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {state}: Waiting {config['delay_between_readings_seconds']} seconds.")
+        time.sleep(config["delay_between_readings_seconds"])
+        next_state = "run_command"
+    elif state == "stat_file":
+        logging.debug(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {state}: Getting mtime of {config['quota_filename']}.")
+        file_mtime = 0
+        try:
+            file_mtime = os.stat(config["quota_filename"]).st_mtime
+            next_state = "check_file_age"
+        except Exception as e:
+            logging.error(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {state}: Could not state file {config['quota_filename']}, terminating. The error was {str(e)}.")
+            next_state = "terminate"
+    elif state == "check_file_age":
+        age = time.time() - file_mtime
+        if (age > config["max_file_age"]):
+            logging.error(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {state}: File {config['quota_filename']} older than {config['max_file_age']} seconds, terminating.")
+            next_state = "terminate"
+        else:
+            next_state = "wait"
+    elif state == "terminate":
+        terminate = True
+
+    state = next_state

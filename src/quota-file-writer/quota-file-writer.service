@@ -1,0 +1,12 @@
+[Unit]
+Description=Quota File Writer for XrdCustomQuotaOss
+
+[Service]
+Type=simple
+User=xrootd
+ExecStart=/usr/bin/quota-file-writer -c /etc/xrootd/quota-file-writer.conf -l /var/log/xrootd/quota-file-writer.log
+ExecStop=/bin/kill -15 $MAINPID
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target
