@@ -8,7 +8,7 @@ RUN dnf install -y bash git make gcc gcc-c++ rpm-build libtool
 # Install XRootD server + sources
 RUN dnf install -y xrootd-server xrootd-server-devel 
 
-# Build XrdLustreOSS
+# Build XrdCustomQuotaOss
 COPY src /root/src
 WORKDIR /root/src
 RUN CPLUS_INCLUDE_PATH=/usr/include/xrootd make -j8
