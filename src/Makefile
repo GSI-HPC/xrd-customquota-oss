@@ -3,9 +3,9 @@ CFLAGS=-DHAVE_CONFIG_H -D_LARGEFILE64_SOURCE=1 -g -Wall -fPIC -D_GNU_SOURCE -g -
 
 all: CustomQuotaOss 
 CustomQuotaOss: 
-		g++ -g3 -fPIC  -I./src/ -c *.cc
-		g++ -shared  -Wl,-soname,LibXrdCustomQuotaOss.so.4,--export-dynamic -o LibXrdCustomQuotaOss.so *.o -lXrdCl 
+		g++ -O2 -fPIC  -I./src/ -c *.cc
+		g++ -shared -Wl,-soname,LibXrdCustomQuotaOss.so.4,--export-dynamic -o LibXrdCustomQuotaOss.so *.o -lXrdCl 
 clean:
-	-rm *.o *.a LibXrdCustomQuotaOss.so test
+	-rm *.o *.a LibXrdCustomQuotaOss.so
 clang-format:
 	clang-format -i -style=file  CustomQuotaOss.cc CustomQuotaOss.hh
