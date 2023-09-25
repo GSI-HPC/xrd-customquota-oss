@@ -1,21 +1,20 @@
 # CustomQuotaOss
 
-A XRootD OSS plug-in to overwrite XRootD's base implementation for space usage statistics with calls to the lustre quota API on a singular lustre mount.
+A XRootD OSS plug-in to overwrite XRootD's base implementation for space usage statistics with information gathered on a file that can be written to from another service. 
 
-## Warning
+## Building/Compiling
 
-The sources include XRootD and lustre header files (especially lustre/lustreapi.h,lustre/lustre_user.h)
-and needs to be linked against the lustre api library. (-llustreapi)
+To create the shared library plug-in, run make in the "src" directory.
+For this to work, you have to make 
 
-## Compiling
+1) the XRootD-Headers in your  includes-path (CPLUS_INCLUDE_PATH)
+2) the XRootD-Client library in library-path ([Try to use LD_LIBRARY_PATH es rare as possible](https://www.hpc.dtu.dk/?page_id=1180)).
 
-To create the plug-in shared library, run make in the "src" directory.
-For this to work, you need to set 2 environmental variables:
+accessible to the build system.
 
-* Set *XRD_PATH* to the top level of your current xrootd installation.
-* Set *LUSTRE_PATH* to the top level of your current lustre installation(with header files). 
+Running 'make' will then create the shared library "LibXrdCustomQutaOss.so"
 
-This will create the shared library "LibXrdLustreOss.so"
+For further information on the build process, have a look at the [Containerfile](/Containerfile).
 
 ## Rocky8 RPM build container
 
@@ -26,25 +25,25 @@ podman build -t customquota .
 podman run -v ./rpm:/rpm -it customquota
 ```
 
-The el8 rpm will then be stored in the rpm directory.
+The el8 rpm will then be stored in your local rpm directory.
 
 ## Configuration
 
-This plug-in is loaded by the XRootD server. In order to accomplish this, you need to indicate the server where the plugin lies in the server's configuration file. Configure your lustre mountpoint and the number of seconds until the cache is invalidated.
+This plug-in is loaded by the XRootD server.
+In order to accomplish this, you need to indicate the server where the plugin lies in the server's configuration file.
+Configure your lustre mountpoint and the number of seconds until the cache is invalidated.
 ```shell
 ofs.osslib  /path/to/LibXrdCustomQuotaOss.so
-CustomQuota.sourcefile /path/to/sourcefile
+customquota.sourcefile /path/to/sourcefile
 
 ```
-You also need to define the mount point of your Lustre FS with LustreOss.lustremount
-
 
 ## Usage
 
-When using this plug-in, all high level XRootD usage statistics calls (xrdfs spaceinfo for example) will be fed lustre quota statistics of the data server's executing user's group.
+When using this plug-in, all high level XRootD usage statistics calls (xrdfs spaceinfo for example) need to be fed into the configured sourcefile from another process.
 
 ## License
 
-The XrdLustreOssWrapper plug-in is distributed under the terms of the GNU Lesser Public Licence version 3 (LGPLv3)
+The CustomQuotaOss plug-in is distributed under the terms of the GNU Lesser Public Licence version 3 (LGPLv3)
 
 
