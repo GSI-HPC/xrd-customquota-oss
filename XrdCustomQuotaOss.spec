@@ -2,7 +2,7 @@
 %define         debug_package %{nil}
 
 Name:           XrdCustomQuotaOss
-Version:        0.9.1
+Version:        1.0.0
 Release:        1%{?dist}
 Summary:        An XRootD plugin that reads custom quota information from a file, caches its contents, and reports it to requesting clients.
 Group:          XRootD/Plugins
