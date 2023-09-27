@@ -15,12 +15,12 @@ RUN CPLUS_INCLUDE_PATH=/usr/include/xrootd make -j8
 
 # package XrdCustomQuotaOss
 WORKDIR /root/rpmbuild
-RUN mkdir -p BUILD SOURCES SPECS RPMS SRPMS XrdCustomQuotaOss-0.9.1
-RUN mv /root/src/LibXrdCustomQuotaOss.so XrdCustomQuotaOss-0.9.1
-RUN tar -cf SOURCES/XrdCustomQuotaOss-0.9.1.tar.gz XrdCustomQuotaOss-0.9.1
+RUN mkdir -p BUILD SOURCES SPECS RPMS SRPMS XrdCustomQuotaOss-1.0.0
+RUN mv /root/src/LibXrdCustomQuotaOss.so XrdCustomQuotaOss-1.0.0
+RUN tar -cf SOURCES/XrdCustomQuotaOss-1.0.0.tar.gz XrdCustomQuotaOss-1.0.0
 WORKDIR /root/
 COPY XrdCustomQuotaOss.spec /root/rpmbuild/SPECS/
 RUN rpmbuild  -bb rpmbuild/SPECS/XrdCustomQuotaOss.spec
 
 RUN mkdir /rpm
-ENTRYPOINT ["cp","/root/rpmbuild/RPMS/x86_64/XrdCustomQuotaOss-0.9.1-1.el8.x86_64.rpm","/rpm"]
+ENTRYPOINT ["cp","/root/rpmbuild/RPMS/x86_64/XrdCustomQuotaOss-1.0.0-1.el8.x86_64.rpm","/rpm"]
