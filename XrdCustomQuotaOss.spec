@@ -4,7 +4,7 @@
 Name:           XrdCustomQuotaOss
 Version:        1.0.0
 Release:        1%{?dist}
-Summary:        An XRootD plugin that reads custom quota information from a file, caches its contents, and reports it to requesting clients.
+Summary:        An XRootD plugin that reads custom quota information from a file and reports it to requesting clients.
 Group:          XRootD/Plugins
 
 License:        LGPLv3
@@ -18,7 +18,7 @@ Requires:       python3-pyyaml
 
 
 %description
-An XRootD plugin that reads custom quota information from a file, caches its contents, and reports it to requesting clients.
+An XRootD plugin that reads custom quota information from a file and reports it to requesting clients.
 Contains a quota-file-writer which repeatedly writes the quota cache file and is started as a separate unit.
 
 %prep
