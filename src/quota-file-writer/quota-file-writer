@@ -164,7 +164,7 @@ while not terminate:
             file_mtime = os.stat(config["quota_filename"]).st_mtime
             next_state = "check_file_age"
         except Exception as e:
-            logging.error(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {state}: Could not state file {config['quota_filename']}, terminating. The error was {str(e)}.")
+            logging.error(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {state}: Could not stat file {config['quota_filename']}, terminating. The error was {str(e)}.")
             next_state = "terminate"
     elif state == "check_file_age":
         age = time.time() - file_mtime
