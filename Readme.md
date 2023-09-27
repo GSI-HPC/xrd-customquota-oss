@@ -1,6 +1,15 @@
 # CustomQuotaOss
 
-A XRootD OSS plug-in to overwrite XRootD's base implementation for space usage statistics with information gathered on a file that can be written to from another service. 
+An XRootD OSS plug-in to overwrite XRootD's base implementation for space usage statistics with information gathered on from file that can be written to from another service, such as the included `quota-file-writer`. 
+
+## Block Diagram
+
+![Block Diagram](./doc/images/block_diagram.png)
+
+## Quota File Writer State Diagram
+
+![Quota File Writer State Diagram](./doc/images/quota-file-writer_state-diagram.png)
+
 
 ## Building/Compiling
 
