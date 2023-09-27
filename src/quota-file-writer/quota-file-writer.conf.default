@@ -18,4 +18,4 @@ delay_between_readings_seconds: 3600
 quota_filename: "/run/xrootd/quota"
 
 # Maximum age of the quota file in seconds
-max_file_age: 10800
+max_file_age_seconds: 10800

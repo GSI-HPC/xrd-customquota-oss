@@ -74,7 +74,7 @@ required_parameters = ["read_quota_command",
                         "find_quota_regex",
                         "delay_between_readings_seconds",
                         "quota_filename",
-                        "max_file_age"]
+                        "max_file_age_seconds"]
 for x in required_parameters:
     if not x in config:
         logging.error("Missing required option '%s' in config file." % x)
@@ -82,7 +82,7 @@ for x in required_parameters:
 
 integer_parameters = ["read_quota_command_timeout_seconds",
                         "delay_between_readings_seconds",
-                        "max_file_age"]
+                        "max_file_age_seconds"]
 for x in integer_parameters:
     if not isinstance(config[x], int):
         logging.error("The parameter '%s' needs to be an integer." % x)
@@ -169,8 +169,8 @@ while not terminate:
             next_state = "terminate"
     elif state == "check_file_age":
         age = time.time() - file_mtime
-        if (age > config["max_file_age"]):
-            logging.error(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {state}: File {config['quota_filename']} older than {config['max_file_age']} seconds, terminating.")
+        if (age > config["max_file_age_seconds"]):
+            logging.error(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {state}: File {config['quota_filename']} older than {config['max_file_age_seconds']} seconds, terminating.")
             next_state = "terminate"
         else:
             next_state = "wait"
