@@ -23,15 +23,16 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="1.4289282"
-     inkscape:cx="247.38822"
-     inkscape:cy="223.24425"
+     inkscape:zoom="2.0208096"
+     inkscape:cx="288.74565"
+     inkscape:cy="292.95189"
      inkscape:window-width="1920"
      inkscape:window-height="1006"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" />
+     inkscape:current-layer="layer1"
+     showgrid="false" />
   <defs
      id="defs1">
     <marker
@@ -373,5 +374,37 @@
          x="161.40915"
          y="134.35287"
          id="tspan21">old</tspan></text>
+    <path
+       style="font-variation-settings:normal;opacity:1;vector-effect:none;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;marker-end:url(#Triangle);stop-color:#000000;stop-opacity:1"
+       d="m 154.3706,111.66552 17.80832,16.18408"
+       id="path2"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:2.82223px;line-height:1.25;font-family:sans-serif;font-variation-settings:normal;text-align:center;text-decoration-color:#000000;letter-spacing:0px;word-spacing:0px;text-anchor:middle;opacity:1;fill:#1a1a1a;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#Triangle)"
+       x="163.94646"
+       y="115.2045"
+       id="text11"><tspan
+         sodipodi:role="line"
+         style="fill:#1a1a1a;fill-opacity:1;stroke-width:0;stroke-dasharray:none"
+         x="163.94646"
+         y="115.2045"
+         id="tspan11">failed</tspan></text>
+    <path
+       style="font-variation-settings:normal;opacity:1;vector-effect:none;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;marker-end:url(#Triangle);stop-color:#000000;stop-opacity:1"
+       d="m 115.9223,106.3691 h 5.86251"
+       id="path14"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-size:2.82223px;line-height:1.25;font-family:sans-serif;font-variation-settings:normal;text-align:center;text-decoration-color:#000000;letter-spacing:0px;word-spacing:0px;text-anchor:middle;opacity:1;fill:#1a1a1a;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#Triangle)"
+       x="119.64931"
+       y="103.58474"
+       id="text22"><tspan
+         sodipodi:role="line"
+         style="fill:#1a1a1a;fill-opacity:1;stroke-width:0;stroke-dasharray:none"
+         x="119.64931"
+         y="103.58474"
+         id="tspan22">failed</tspan></text>
   </g>
 </svg>

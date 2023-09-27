@@ -150,9 +150,10 @@ while not terminate:
                 with open(config["quota_filename"], "w") as f:
                     f.write(f"{num_alwd} {num_used} {num_free} {num_free}")
             logging.debug(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {state}: Successfully wrote to file {config['quota_filename']}")
+            next_state = "wait"
         except Exception as e:
             logging.error(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {state}: Failed to write file {config['quota_filename']}. The error was: {str(e)}")
-        next_state = "wait"
+            next_state = "stat_file"
     elif state == "wait":
         logging.debug(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} {state}: Waiting {config['delay_between_readings_seconds']} seconds.")
         time.sleep(config["delay_between_readings_seconds"])
