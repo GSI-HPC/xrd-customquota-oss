@@ -25,14 +25,19 @@ Running 'make' will then create the shared library "LibXrdCustomQutaOss.so"
 
 For further information on the build process, have a look at the [Containerfile](/Containerfile).
 
-## Rocky8 RPM build container
+## Rocky8/Rocky9 RPM build containers
 
-Use the Containerfile with podman to compile the library and package it into a rpm using:
+* In this repo's root directory, create a symlink to the files `Containerfile` and `XrdCustomQuotaOss.spec` in `build-workflow/rocky8` or `build-workflow/rocky9`
+    ```
+    $ ln -s build-workflow/rocky9/Containerfile .
+    $ ln -s build-workflow/rocky9/XrdCustomQuotaOss.spec .
+    ```
+* Use the Containerfile with podman to compile the library and package it into a rpm using:
 
-```
-podman build -t customquota .
-podman run -v ./rpm:/rpm -it customquota
-```
+    ```
+    $ podman build -t customquota .
+    $ podman run -v ./rpm:/rpm -it customquota
+    ```
 
 The el8 rpm will then be stored in your local rpm directory.
 
